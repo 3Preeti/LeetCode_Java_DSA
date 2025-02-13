@@ -1,31 +1,23 @@
 class Solution {
-    /**
-     * Using Greedy Approach - Min-Heap (PriorityQueue)
-     *
-     * TC: O(4 x N x log(N)) ~ O(N x log(N))
-     * SC: O(N)
-     */
     public int minOperations(int[] nums, int k) {
-        int n = nums.length;
-        int operations = 0;
-        // min-heap needed to sort the elements during insertion
-        PriorityQueue<Long> pq = new PriorityQueue<Long>(); // SC: O(N)
-        for (int i = 0; i < n; i++) {              // TC: O(N)
-            pq.offer((long) nums[i]);
+        // Create a priority queue to store the numbers in ascending order
+        PriorityQueue<Long> pq = new PriorityQueue<>();
+        for(int num : nums) 
+            pq.offer((long)num);
+        int op = 0;
+        // Continue processing while there are at least two elements in the queue
+        while(pq.size() >= 2) {
+            // Poll the smallest element from the queue
+            long x = pq.poll();
+            if(x >= k) break;            
+            long y = pq.poll();  // Poll the next smallest element from the queue
+            
+            // Calculate the new value to be added back to the queue
+            // The new value is the sum of the smaller element doubled and the larger element
+            long res = Math.min(x, y) * 2 + Math.max(x, y);
+            pq.offer(res);  // Offer the new value back into the priority queue
+            op++;
         }
-        long x, y;
-        while (pq.peek() < k) {                    // TC: O(N)
-            x = pq.poll();                         // TC: O(log(N))
-            // check if PriorityQueue becomes empty after polling
-            if (!pq.isEmpty()) {
-                y = pq.poll();                     // TC: O(log(N))
-                pq.offer(x * 2 + y);               // TC: O(log(N))
-                operations++;
-            } else {
-                // the PriorityQueue had only 1 element
-                break;
-            }
-        }
-        return operations;
+        return op;   // Return the total number of operations performed
     }
 }
